@@ -475,9 +475,10 @@ function renderProfile(){ Object.keys(PF).forEach(function(id){ $(id).value=S.ma
 Object.keys(PF).forEach(function(id){ $(id).addEventListener('input',function(){ S.main.profile[PF[id]]=$(id).value; schedule('main'); }); });
 
 function renderHolidays(){
+  var hl=$('holList'); if(!hl) return;
   var raw=rawHol(), H=computeHol(), yr=S.ym.slice(0,4);
   // remember which year groups are open across re-renders
-  var openYrs={}; $('holList').querySelectorAll('details[data-y]').forEach(function(d){ openYrs[d.dataset.y]=d.open; });
+  var openYrs={}; hl.querySelectorAll('details[data-y]').forEach(function(d){ openYrs[d.dataset.y]=d.open; });
   var keys=Object.keys(raw);
   // auto replacement days that are not in the raw list
   var autoT={}; Object.keys(H.moved).forEach(function(src){ var t=H.moved[src]; if(!raw[t]){ autoT[t]=src; keys.push(t); } });
@@ -490,7 +491,7 @@ function renderHolidays(){
     if(H.moved[k]) return '<div class="hol moved">'+dn+'<span class="nm"><s>'+esc(raw[k])+'</s><br><span class="hint">Jatuh '+C.dayName(k).toLowerCase()+' – tidak dikira PH, dianjak ke '+C.fmtDate(H.moved[k])+' ('+C.dayName(H.moved[k]).slice(0,3)+')</span></span><button class="iconbtn" data-h="'+k+'" aria-label="Buang">✕</button></div>';
     return '<div class="hol">'+dn+'<span class="nm">'+esc(raw[k])+'</span>'+(/^Cuti ganti/i.test(raw[k])?'':'<button class="linkbtn" data-g="'+k+'" title="Tambah cuti ganti pada hari bekerja berikutnya">Ganti →</button>')+'<button class="iconbtn" data-h="'+k+'" aria-label="Buang">✕</button></div>';
   };
-  $('holList').innerHTML = Object.keys(years).sort().map(function(y){
+  hl.innerHTML = Object.keys(years).sort().map(function(y){
     var ks=years[y], ph=ks.filter(function(k){ return H.map[k]; }).length;
     var open = (y in openYrs) ? openYrs[y] : (y===yr);
     return '<details class="hyr" data-y="'+y+'"'+(open?' open':'')+'><summary><span>'+y+' <span class="hint" style="font-weight:600">· '+ph+' hari dikira PH</span></span></summary>'+
@@ -498,19 +499,19 @@ function renderHolidays(){
   }).join('');
 }
 function nextWorkday(iso){ var d=C.addDays(iso,1); while(C.isWeekend(d)||hol()[d]) d=C.addDays(d,1); return d; }
-$('holList').addEventListener('click',function(ev){
+if($('holList')) $('holList').addEventListener('click',function(ev){
   var g=ev.target.closest('[data-g]');
   if(g){ var src=g.dataset.g, nd=nextWorkday(src), nm=rawHol()[src];
     confirmBox('Tambah cuti ganti "'+nm+'" pada '+C.fmtDate(nd)+' ('+C.dayName(nd)+')?','Ya, tambah').then(function(ok){ if(!ok) return;
       S.main.holidays[nd]='Cuti ganti '+nm; schedule('main'); renderHolidays(); renderMonth(); toast('Cuti ganti ditambah: '+C.fmtDate(nd)); });
     return; }
   var b=ev.target.closest('[data-h]'); if(!b) return; delete S.main.holidays[b.dataset.h]; schedule('main'); renderHolidays(); renderMonth(); });
-function renderShift(){ var sd=shiftDays(); ['0','6'].forEach(function(dw){ var el=$('sh'+dw); el.checked=!!sd[dw]; el.closest('label').classList.toggle('off',!sd[dw]); }); }
-['0','6'].forEach(function(dw){ $('sh'+dw).addEventListener('change',function(){ var sd=Object.assign({},shiftDays()); sd[dw]=$('sh'+dw).checked; S.main.shiftDays=sd; schedule('main'); renderShift(); renderHolidays(); renderMonth(); }); });
-$('hAdd').onclick=function(){ var d=$('hDate').value, n=$('hName').value.trim()||'Cuti umum'; if(!d){ toast('Pilih tarikh cuti'); return; }
+function renderShift(){ var sd=shiftDays(); ['0','6'].forEach(function(dw){ var el=$('sh'+dw); if(!el) return; el.checked=!!sd[dw]; el.closest('label').classList.toggle('off',!sd[dw]); }); }
+['0','6'].forEach(function(dw){ var el=$('sh'+dw); if(!el) return; el.addEventListener('change',function(){ var sd=Object.assign({},shiftDays()); sd[dw]=el.checked; S.main.shiftDays=sd; schedule('main'); renderShift(); renderHolidays(); renderMonth(); }); });
+if($('hAdd')) $('hAdd').onclick=function(){ var d=$('hDate').value, n=$('hName').value.trim()||'Cuti umum'; if(!d){ toast('Pilih tarikh cuti'); return; }
   S.main.holidays[d]=n; schedule('main'); $('hDate').value=''; $('hName').value=''; renderHolidays(); renderMonth(); toast('Cuti umum ditambah'); };
 
-$('kTable').innerHTML=C.KADAR.map(function(k){ return '<tr><td>'+kBadge(k)+'</td><td class="mono"><b>'+C.KADAR_INFO[k].r+'</b></td><td>'+C.KADAR_INFO[k].t+'</td></tr>'; }).join('');
+if($('kTable')) $('kTable').innerHTML=C.KADAR.map(function(k){ return '<tr><td>'+kBadge(k)+'</td><td class="mono"><b>'+C.KADAR_INFO[k].r+'</b></td><td>'+C.KADAR_INFO[k].t+'</td></tr>'; }).join('');
 
 /* ---------- keterangan editor ---------- */
 function renderKet(){ $('ketTxt').value=ketLines().join('\n').replace(/\n+$/,''); $('ketPreset').value=ketPresetOf(); ketInfo(); }

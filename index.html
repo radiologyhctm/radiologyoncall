@@ -126,18 +126,6 @@
         <label class="f">Alamat rumah<input type="text" id="pAlamat"></label>
       </div>
     </details>
-    <details>
-      <summary>Cuti umum (kadar D / E)</summary>
-      <p class="hint" style="margin-top:0">Senarai lalai: Wilayah Persekutuan Kuala Lumpur 2026–2027. Sabtu &amp; Ahad dikira hari minggu. Cuti umum yang jatuh pada hari bertanda di bawah tidak dikira PH dan dianjak automatik ke hari bekerja berikutnya. Untuk anjakan lain, tekan <b>Ganti →</b> atau tambah tarikh di bawah. Kadar slot yang sudah direkod dikira semula secara automatik.</p>
-      <label class="wkc" style="margin-bottom:6px"><input type="checkbox" id="sh0"><span>PH jatuh <b style="font-family:inherit">Ahad</b> → anjak ke hari bekerja berikutnya</span></label>
-      <label class="wkc" style="margin-bottom:10px"><input type="checkbox" id="sh6"><span>PH jatuh <b style="font-family:inherit">Sabtu</b> → anjak ke hari bekerja berikutnya</span></label>
-      <div class="grid g3" style="align-items:end">
-        <label class="f">Tarikh<input type="date" id="hDate"></label>
-        <label class="f">Nama cuti<input type="text" id="hName" placeholder="cth. Cuti Peristiwa"></label>
-        <button class="btn ghost" id="hAdd">Tambah cuti</button>
-      </div>
-      <div id="holList" style="margin-top:10px"></div>
-    </details>
     <details hidden>
       <summary>Syif hujung minggu &amp; cuti umum (dituntut sebagai lebih masa)</summary>
       <p class="hint" style="margin-top:0">Syif ini dimasukkan automatik apabila tarikh oncall jatuh pada Sabtu, Ahad atau cuti umum (hari bekerja yang menjadi PH, termasuk cuti ganti). Hari off selepas oncall (Sabtu, Ahad atau PH yang jatuh esok selepas oncall) menggunakan syif "Hari off selepas oncall" sahaja. Kosongkan masa jika tiada syif pada hari itu.</p>
@@ -165,20 +153,6 @@
         <span class="hint" id="ketInfo"></span>
         <button class="linkbtn" id="ketReset">↺ Pulihkan teks asal</button>
       </div>
-    </details>
-    <details id="bkBox">
-      <summary>Sandaran data (Backup &amp; Pulihkan)</summary>
-      <p class="hint" style="margin-top:0">Data tuntutan disimpan dalam pelayar peranti ini. Muat turun fail sandaran (<code>.json</code>) jika anda ingin simpan salinan atau pindah ke telefon/komputer lain.</p>
-      <div class="bkbtns">
-        <button type="button" class="btn ghost" id="bkExport">⬇ Muat turun sandaran (.json)</button>
-        <button type="button" class="btn ghost" id="bkImport">⬆ Pulihkan sandaran (.json)</button>
-      </div>
-      <input type="file" id="bkFile" accept=".json,application/json" hidden>
-    </details>
-    <details>
-      <summary>Panduan kadar</summary>
-      <table class="kt" id="kTable"></table>
-      <p class="hint">Kadar dikira automatik ikut hari &amp; waktu mula setiap slot. Slot yang melintasi 6 pagi atau 10 malam dipecahkan kepada dua baris. Tekan lencana kadar dalam senarai untuk tukar secara manual.</p>
     </details>
   </section>
   <!-- Jana -->
@@ -209,6 +183,6 @@
 <div class="modal" id="modal"><div class="box"><p id="mText"></p><div class="acts"><button class="btn ghost" id="mNo">Batal</button><button class="btn pri" id="mYes">Ya</button></div></div></div>
 
 <script src="core.js?v=2.0"></script>
-<script src="app.js?v=2.0"></script>
+<script src="app.js?v=2.0.1"></script>
 </body>
 </html>
