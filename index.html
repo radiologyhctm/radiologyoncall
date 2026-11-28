@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tuntutan Oncall – Borang Kerja Lebih Masa</title>
+<title>Tuntutan Oncall V2 – Borang Kerja Lebih Masa</title>
 <meta name="theme-color" content="#0f3554">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 <div class="logobar"><div class="wrap lb">
@@ -28,7 +28,7 @@
   <div class="wrap">
     <div class="brand">
       <div>
-        <h1>Tuntutan Oncall</h1>
+        <h1>Tuntutan Oncall V2</h1>
         <p>Borang Tuntutan Elaun Kerja Lebih Masa</p>
       </div>
       <span class="save" id="saveState">Memuatkan…</span>
@@ -202,13 +202,13 @@
       <button class="btn" id="wipeAll">🗑 Padam semua</button>
     </div>
   </section>
-  <footer>Data disimpan dalam peranti ini · borang dijana terus dari templat HCTM/JKIK/KEW/B05<div class="copy">© 2026 FH. Hak cipta terpelihara.</div></footer>
+  <footer>Data disimpan dalam peranti ini · borang dijana terus dari templat HCTM/JKIK/KEW/B05<div class="copy">© 2026 FH. Hak cipta terpelihara. <span class="ver" id="appVer">v2.0</span></div></footer>
 </main>
 
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="box"><p id="mText"></p><div class="acts"><button class="btn ghost" id="mNo">Batal</button><button class="btn pri" id="mYes">Ya</button></div></div></div>
 
-<script src="core.js"></script>
-<script src="app.js"></script>
+<script src="core.js?v=2.0"></script>
+<script src="app.js?v=2.0"></script>
 </body>
 </html>
