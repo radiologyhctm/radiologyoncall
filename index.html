@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tuntutan Oncall V2 – Borang Kerja Lebih Masa</title>
+<title>Tuntutan Oncall V2.1 – Borang Kerja Lebih Masa</title>
 <meta name="theme-color" content="#0f3554">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -15,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="style.css?v=2.0">
+<link rel="stylesheet" href="style.css?v=2.1">
 </head>
 <body>
 <div class="logobar"><div class="wrap lb">
@@ -28,7 +28,7 @@
   <div class="wrap">
     <div class="brand">
       <div>
-        <h1>Tuntutan Oncall V2</h1>
+        <h1>Tuntutan Oncall V2.1</h1>
         <p>Borang Tuntutan Elaun Kerja Lebih Masa</p>
       </div>
       <span class="save" id="saveState">Memuatkan…</span>
@@ -41,148 +41,168 @@
   </div>
 </header>
 
-<main class="wrap">
-  <!-- Ringkasan -->
-  <section class="card">
-    <div class="summary">
-      <div class="big" id="sumTotal">0<small> jam</small></div>
+<main class="wrap" id="appMain" data-view="add">
+  <!-- Ringkasan padat -->
+  <section class="card sumcard">
+    <div class="sumtop">
+      <div class="sumleft">
+        <div class="big" id="sumTotal">0<small> jam</small></div>
+        <div class="sumbar">
+          <div class="rowsbar"><i id="rowsBar" style="width:0"></i></div>
+          <div class="rowsinfo"><span id="rowsInfo">0 / 31 baris borang digunakan</span><span id="eqInfo"></span></div>
+        </div>
+      </div>
       <div class="chips" id="sumChips"></div>
     </div>
-    <div class="rowsbar"><i id="rowsBar" style="width:0"></i></div>
-    <div class="rowsinfo"><span id="rowsInfo">0 / 31 baris borang digunakan</span><span id="eqInfo"></span></div>
-    <div class="calc">
-      <div class="calch">
-        <b>Kalkulator tuntutan</b>
-        <label class="gaji"><span>Gaji pokok (RM)</span><input type="text" inputmode="decimal" id="gaji" placeholder="cth. 3200.00"></label>
-      </div>
+    <details class="calc" id="calcBox">
+      <summary class="calch">
+        <span class="calctitle"><b>Kalkulator tuntutan</b><span class="calcchev">▾</span><span class="calcpill" id="calcPill"></span></span>
+        <label class="gaji" onclick="event.stopPropagation()"><span>Gaji pokok (RM)</span><input type="text" inputmode="decimal" id="gaji" placeholder="cth. 3200.00"></label>
+      </summary>
       <div id="calcOut"></div>
-    </div>
+    </details>
   </section>
 
-  <!-- Tambah -->
-  <section class="card">
-    <h2><span class="n">1</span>Tambah oncall</h2>
-    <div class="tabs">
-      <button class="on" data-tab="oc">Oncall</button>
-      <button data-tab="one">Lebih masa</button>
-    </div>
+  <!-- Navigasi utama (elak skrol panjang) -->
+  <nav class="appnav" id="appNav" aria-label="Navigasi utama">
+    <button type="button" class="on" data-view="add"><span class="lbl-desk">Rekod &amp; Senarai</span><span class="lbl-mob">Tambah</span></button>
+    <button type="button" class="mob-only" data-view="list">Senarai <span class="navcnt" id="navCnt" hidden>0</span></button>
+    <button type="button" data-view="set">Tetapan</button>
+    <button type="button" data-view="gen"><span class="lbl-desk">Jana borang</span><span class="lbl-mob">Jana</span></button>
+  </nav>
 
-    <div id="tab-oc">
-      <div class="f">Tarikh oncall</div>
-      <input type="hidden" id="ocDate">
-      <div class="cal" id="ocCal"></div>
-      <div class="grid g2" style="margin-top:12px">
-        <label class="f">Hakiki hari itu<div class="hk" id="ocHk0"></div></label>
-        <label class="f">Hakiki esok<div class="hk" id="ocHk1"></div></label>
+  <!-- Workspace: Tambah + Senarai (2 lajur di desktop, 2 tab di telefon) -->
+  <div class="workspace">
+    <!-- Tambah -->
+    <section class="card pane-add">
+      <h2><span class="n">1</span>Tambah oncall</h2>
+      <div class="tabs">
+        <button class="on" data-tab="oc">Oncall</button>
+        <button data-tab="one">Lebih masa</button>
       </div>
-      <div class="segs" hidden>
-        <div class="hint" style="margin-bottom:8px">Slot kerja lebih masa (ubah jika perlu):</div>
-        <div id="ocSegs"></div>
-        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
-          <button class="linkbtn" id="ocAddSeg">+ Tambah slot</button>
-          <button class="linkbtn" id="ocSaveDef">Simpan slot ini sebagai lalai</button>
+
+      <div id="tab-oc">
+        <div class="f">Tarikh oncall</div>
+        <input type="hidden" id="ocDate">
+        <div class="cal" id="ocCal"></div>
+        <div class="grid g2" style="margin-top:9px">
+          <label class="f">Hakiki hari itu<div class="hk" id="ocHk0"></div></label>
+          <label class="f">Hakiki esok<div class="hk" id="ocHk1"></div></label>
         </div>
+        <div class="segs" hidden>
+          <div class="hint" style="margin-bottom:8px">Slot kerja lebih masa (ubah jika perlu):</div>
+          <div id="ocSegs"></div>
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
+            <button class="linkbtn" id="ocAddSeg">+ Tambah slot</button>
+            <button class="linkbtn" id="ocSaveDef">Simpan slot ini sebagai lalai</button>
+          </div>
+        </div>
+        <div class="pv" id="ocPv"></div>
+        <div id="ocMsg"></div>
+        <button class="btn pri w100" style="margin-top:9px" id="ocAdd">Tambah ke senarai</button>
       </div>
-      <div class="pv" id="ocPv"></div>
-      <div id="ocMsg"></div>
-      <button class="btn pri w100" style="margin-top:12px" id="ocAdd">Tambah ke senarai</button>
-    </div>
 
-    <div id="tab-one" hidden>
-      <div class="f">Jenis lebih masa</div>
-      <div class="lmj" id="lmJenis"><button type="button" data-j="KARDIAK">Lebih masa kardiak</button><button type="button" data-j="ANGIO">Lebih masa angio</button></div>
-      <div class="grid g2">
-        <label class="f">Tarikh<input type="date" id="oneDate"></label>
-        <label class="f">Waktu hakiki<div class="hk" id="oneHk"></div></label>
-      </div>
-      <div class="grid g2" style="margin-top:10px">
-        <label class="f">Mula<input type="text" class="t" inputmode="numeric" maxlength="5" placeholder="2100" id="oneS"></label>
-        <label class="f">Tamat<input type="text" class="t" inputmode="numeric" maxlength="5" placeholder="2200" id="oneE"></label>
-      </div>
-      <div class="pv" id="onePv"></div>
-      <div id="oneMsg"></div>
-      <button class="btn pri w100" style="margin-top:12px" id="oneAdd">Tambah ke senarai</button>
-    </div>
-  </section>
-
-  <!-- Senarai -->
-  <section class="card">
-    <h2 style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="n">2</span>Senarai <span id="listLbl" style="font-weight:600;color:var(--muted)"></span></span><button class="btn ghost delall" id="delAll" hidden>🗑 Padam semua</button></h2>
-    <div id="list"></div>
-  </section>
-
-  <!-- Tetapan -->
-  <section class="card">
-    <h2><span class="n">3</span>Tetapan</h2>
-    <details id="profBox">
-      <summary>Maklumat pemohon</summary>
-      <div class="grid">
-        <label class="f">Nama<input type="text" id="pNama" autocomplete="name"></label>
-        <label class="f">No. telefon &amp; alamat emel<input type="text" id="pTel" placeholder="01x-xxxxxxx / nama@hctm.ukm.edu.my"></label>
+      <div id="tab-one" hidden>
+        <div class="f">Jenis lebih masa</div>
+        <div class="lmj" id="lmJenis"><button type="button" data-j="KARDIAK">Lebih masa kardiak</button><button type="button" data-j="ANGIO">Lebih masa angio</button></div>
         <div class="grid g2">
-          <label class="f">No. pekerja<input type="text" id="pPekerja"></label>
-          <label class="f">Jabatan<input type="text" id="pJabatan"></label>
+          <label class="f">Tarikh<input type="date" id="oneDate"></label>
+          <label class="f">Waktu hakiki<div class="hk" id="oneHk"></div></label>
         </div>
-        <label class="f">Alamat rumah<input type="text" id="pAlamat"></label>
+        <div class="grid g2" style="margin-top:9px">
+          <label class="f">Mula<input type="text" class="t" inputmode="numeric" maxlength="5" placeholder="2100" id="oneS"></label>
+          <label class="f">Tamat<input type="text" class="t" inputmode="numeric" maxlength="5" placeholder="2200" id="oneE"></label>
+        </div>
+        <div class="pv" id="onePv"></div>
+        <div id="oneMsg"></div>
+        <button class="btn pri w100" style="margin-top:9px" id="oneAdd">Tambah ke senarai</button>
       </div>
-    </details>
-    <details hidden>
-      <summary>Syif hujung minggu &amp; cuti umum (dituntut sebagai lebih masa)</summary>
-      <p class="hint" style="margin-top:0">Syif ini dimasukkan automatik apabila tarikh oncall jatuh pada Sabtu, Ahad atau cuti umum (hari bekerja yang menjadi PH, termasuk cuti ganti). Hari off selepas oncall (Sabtu, Ahad atau PH yang jatuh esok selepas oncall) menggunakan syif "Hari off selepas oncall" sahaja. Kosongkan masa jika tiada syif pada hari itu.</p>
-      <div class="grid g2">
-        <label class="f">Sabtu – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk6s"></label>
-        <label class="f">Sabtu – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk6e"></label>
-        <label class="f">Ahad – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk0s"></label>
-        <label class="f">Ahad – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk0e"></label>
-        <label class="f">Cuti umum – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wkphs"></label>
-        <label class="f">Cuti umum – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wkphe"></label>
-        <label class="f">Hari off selepas oncall – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="frs"></label>
-        <label class="f">Hari off selepas oncall – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="fre"></label>
-      </div>
-    </details>
-    <details id="ketBox">
-      <summary>Keterangan borang</summary>
-      <p class="hint" style="margin-top:0">Teks dalam lajur KETERANGAN borang. Satu baris di sini = satu baris dalam borang, bermula pada baris 2 (maksimum 30 baris). Sebaiknya tidak lebih ~20 aksara sebaris.</p>
-      <label class="f" style="margin-bottom:8px">Pilih keterangan<select id="ketPreset">
-        <option value="hctm">MENJALANKAN TUGAS LEBIH MASA DI JABATAN RADIOLOGI, WAD-WAD, UNIT KECEMASAN DAN DEWAN BEDAH HCTM</option>
-        <option value="ct">MENJALANKAN TUGAS LEBIH MASA DI CT SCAN</option>
-        <option value="custom">Teks sendiri (ubah di bawah)</option>
-      </select></label>
-      <textarea id="ketTxt" rows="10" spellcheck="false"></textarea>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
-        <span class="hint" id="ketInfo"></span>
-        <button class="linkbtn" id="ketReset">↺ Pulihkan teks asal</button>
-      </div>
-    </details>
-  </section>
+    </section>
+
+    <!-- Senarai -->
+    <section class="card pane-list">
+      <h2 style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="n">2</span>Senarai <span id="listLbl" style="font-weight:600;color:var(--muted)"></span></span><button class="btn ghost delall" id="delAll" hidden>🗑 Padam semua</button></h2>
+      <div class="listscroll" id="list"></div>
+    </section>
+  </div>
+
   <!-- Jana -->
-  <section class="card">
+  <section class="card pane-gen">
     <h2><span class="n">4</span>Jana borang</h2>
     <div class="grid gen">
       <label class="f">Tarikh pada borang<input type="date" id="genDate"></label>
       <div class="genbtns"><button class="btn acc" id="genBtn">⬇ Word (.docx)</button><button class="btn pri" id="genPdf">⬇ PDF</button></div>
     </div>
     <div id="genMsg"></div>
-    <details style="margin-top:10px">
+    <details style="margin-top:10px" open>
       <summary>Pratonton borang</summary>
       <div class="pvwrap"><table class="form" id="pvTable"></table></div>
     </details>
   </section>
 
-  <!-- Padam semua -->
-  <section class="card">
-    <div class="danger" style="margin-top:0">
-      <div><b>Padam semua data</b><span class="hint">Semua slot (semua bulan), maklumat pemohon, gaji pokok dan tetapan dipadam. Aplikasi kembali seperti baru.</span></div>
-      <button class="btn" id="wipeAll">🗑 Padam semua</button>
-    </div>
-  </section>
-  <footer>Data disimpan dalam peranti ini · borang dijana terus dari templat HCTM/JKIK/KEW/B05<div class="copy">© 2026 FH. Hak cipta terpelihara. <span class="ver" id="appVer">v2.0</span></div></footer>
+  <!-- Tetapan & Padam semua -->
+  <div class="pane-set">
+    <section class="card">
+      <h2><span class="n">3</span>Tetapan</h2>
+      <div class="setgrid">
+        <details id="profBox" open>
+          <summary>Maklumat pemohon</summary>
+          <div class="grid">
+            <label class="f">Nama<input type="text" id="pNama" autocomplete="name"></label>
+            <label class="f">No. telefon &amp; alamat emel<input type="text" id="pTel" placeholder="01x-xxxxxxx / nama@hctm.ukm.edu.my"></label>
+            <div class="grid g2">
+              <label class="f">No. pekerja<input type="text" id="pPekerja"></label>
+              <label class="f">Jabatan<input type="text" id="pJabatan"></label>
+            </div>
+            <label class="f">Alamat rumah<input type="text" id="pAlamat"></label>
+          </div>
+        </details>
+        <details hidden>
+          <summary>Syif hujung minggu &amp; cuti umum (dituntut sebagai lebih masa)</summary>
+          <p class="hint" style="margin-top:0">Syif ini dimasukkan automatik apabila tarikh oncall jatuh pada Sabtu, Ahad atau cuti umum (hari bekerja yang menjadi PH, termasuk cuti ganti). Hari off selepas oncall (Sabtu, Ahad atau PH yang jatuh esok selepas oncall) menggunakan syif "Hari off selepas oncall" sahaja. Kosongkan masa jika tiada syif pada hari itu.</p>
+          <div class="grid g2">
+            <label class="f">Sabtu – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk6s"></label>
+            <label class="f">Sabtu – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk6e"></label>
+            <label class="f">Ahad – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk0s"></label>
+            <label class="f">Ahad – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wk0e"></label>
+            <label class="f">Cuti umum – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="wkphs"></label>
+            <label class="f">Cuti umum – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="wkphe"></label>
+            <label class="f">Hari off selepas oncall – mula<input type="text" class="t" inputmode="numeric" maxlength="5" id="frs"></label>
+            <label class="f">Hari off selepas oncall – tamat<input type="text" class="t" inputmode="numeric" maxlength="5" id="fre"></label>
+          </div>
+        </details>
+        <details id="ketBox" open>
+          <summary>Keterangan borang</summary>
+          <p class="hint" style="margin-top:0">Teks dalam lajur KETERANGAN borang. Satu baris di sini = satu baris dalam borang, bermula pada baris 2 (maksimum 30 baris). Sebaiknya tidak lebih ~20 aksara sebaris.</p>
+          <label class="f" style="margin-bottom:8px">Pilih keterangan<select id="ketPreset">
+            <option value="hctm">MENJALANKAN TUGAS LEBIH MASA DI JABATAN RADIOLOGI, WAD-WAD, UNIT KECEMASAN DAN DEWAN BEDAH HCTM</option>
+            <option value="ct">MENJALANKAN TUGAS LEBIH MASA DI CT SCAN</option>
+            <option value="custom">Teks sendiri (ubah di bawah)</option>
+          </select></label>
+          <textarea id="ketTxt" rows="7" spellcheck="false"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
+            <span class="hint" id="ketInfo"></span>
+            <button class="linkbtn" id="ketReset">↺ Pulihkan teks asal</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Padam semua -->
+    <section class="card">
+      <div class="danger" style="margin-top:0">
+        <div><b>Padam semua data</b><span class="hint">Semua slot (semua bulan), maklumat pemohon, gaji pokok dan tetapan dipadam. Aplikasi kembali seperti baru.</span></div>
+        <button class="btn" id="wipeAll">🗑 Padam semua</button>
+      </div>
+    </section>
+  </div>
+  <footer>Data disimpan dalam peranti ini · borang dijana terus dari templat HCTM/JKIK/KEW/B05<div class="copy">© 2026 FH. Hak cipta terpelihara. <span class="ver" id="appVer">v2.1</span></div></footer>
 </main>
 
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div class="box"><p id="mText"></p><div class="acts"><button class="btn ghost" id="mNo">Batal</button><button class="btn pri" id="mYes">Ya</button></div></div></div>
 
-<script src="core.js?v=2.0"></script>
-<script src="app.js?v=2.0.1"></script>
+<script src="core.js?v=2.1"></script>
+<script src="app.js?v=2.1"></script>
 </body>
 </html>

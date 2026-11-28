@@ -326,6 +326,20 @@ document.querySelectorAll('.tabs button').forEach(function(b){ b.onclick=functio
   document.querySelectorAll('.tabs button').forEach(function(x){ x.classList.toggle('on',x===b); });
   $('tab-oc').hidden = b.dataset.tab!=='oc'; $('tab-one').hidden = b.dataset.tab!=='one'; }; });
 
+/* main view switcher (zero-scroll nav) */
+function setView(v){
+  var m=$('appMain'); if(!m) return;
+  m.dataset.view=v;
+  if($('appNav')) $('appNav').querySelectorAll('button[data-view]').forEach(function(b){
+    var on = b.dataset.view===v || (v==='list' && b.dataset.view==='add' && window.innerWidth>=880);
+    b.classList.toggle('on', on);
+  });
+}
+if($('appNav')) $('appNav').addEventListener('click',function(ev){
+  var b=ev.target.closest('button[data-view]'); if(!b) return;
+  setView(b.dataset.view);
+});
+
 /* ---------- month view ---------- */
 function curEntries(){ return (S.months[S.ym]||{entries:[]}).entries.filter(function(e){ return ymOf(e.date)===S.ym; }); }
 
@@ -344,14 +358,22 @@ function renderSummary(layout){
 function rm(n){ return 'RM '+n.toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function parseGaji(v){ var n=parseFloat(String(v||'').replace(/[^0-9.]/g,'')); return isFinite(n)&&n>0 ? n : 0; }
 function renderCalc(layout){
-  var g=parseGaji(S.main.gaji), out=$('calcOut');
-  if(!g){ out.innerHTML='<p class="hint" style="margin:8px 0 0">Masukkan gaji pokok untuk kira anggaran tuntutan bulan ini dan semak had 1/3 gaji.</p>'; return; }
+  var g=parseGaji(S.main.gaji), out=$('calcOut'), pill=$('calcPill');
+  if(!g){
+    if(pill){ pill.textContent=''; pill.className='calcpill'; }
+    out.innerHTML='<p class="hint" style="margin:8px 0 0">Masukkan gaji pokok untuk kira anggaran tuntutan bulan ini dan semak had 1/3 gaji.</p>';
+    return;
+  }
   var hr=g*12/(313*8), total=0, rows='';
   C.KADAR.forEach(function(k){ var mins=layout.totals[k]; if(!mins) return; var f=parseFloat(C.KADAR_INFO[k].r);
     var amt=Math.round(hr*f*mins/60*100)/100; total+=amt;
     rows+='<tr><td>'+kBadge(k)+'</td><td>'+hm(mins)+' × '+C.KADAR_INFO[k].r+'</td><td class="r">'+rm(amt)+'</td></tr>'; });
   total=Math.round(total*100)/100;
   var t1=Math.round(g/3*100)/100, t2=Math.round(g*2/3*100)/100, pct=t1?total/t1*100:0;
+  if(pill){
+    pill.textContent=rm(total)+' · '+pct.toFixed(0)+'%';
+    pill.className='calcpill '+(total>t1?'bad':pct>=90?'mid':total>0?'ok':'');
+  }
   var h='<table class="ctab"><tr><td colspan="2" class="hint">Kadar sejam = '+rm(g)+' × 12 ÷ (313 × 8)</td><td class="r">'+rm(Math.round(hr*100)/100)+'</td></tr>'+rows+
     '<tr class="tot"><td colspan="2">Jumlah tuntutan</td><td class="r">'+rm(total)+'</td></tr></table>'+
     '<div class="lims"><div class="lim"><span>Gaji pokok</span><b>'+rm(g)+'</b></div><div class="lim"><span>1/3 gaji (had)</span><b>'+rm(t1)+'</b></div><div class="lim"><span>2/3 gaji</span><b>'+rm(t2)+'</b></div></div>'+
@@ -370,6 +392,7 @@ function renderList(){
   var list=C.sortEntries(curEntries());
   $('listLbl').textContent=C.monthLabel(S.ym).toLowerCase().replace(/(^|\s)\S/g,function(c){return c.toUpperCase();});
   $('delAll').hidden = !list.length;
+  var nc=$('navCnt'); if(nc){ nc.textContent=list.length; nc.hidden=!list.length; }
   if(!list.length){ $('list').innerHTML='<div class="empty">Tiada oncall direkod untuk '+C.monthLabel(S.ym)+'.<br>Tambah di atas — kadar dan jam dikira automatik.</div>'; return; }
   var byDay={}, order=[]; list.forEach(function(e){ if(!byDay[e.date]){ byDay[e.date]=[]; order.push(e.date); } byDay[e.date].push(e); });
   var h='';
@@ -591,7 +614,7 @@ function genPrep(){
   if(!layout.rows.length){ toast('Tiada entri untuk bulan ini'); return null; }
   if(layout.overflow){ toast('Melebihi 31 baris borang'); return null; }
   var p=S.main.profile;
-  if(!p.nama){ $('profBox').open=true; $('pNama').focus(); toast('Isi maklumat pemohon dahulu'); return null; }
+  if(!p.nama){ setView('set'); $('profBox').open=true; $('pNama').focus(); toast('Isi maklumat pemohon dahulu'); return null; }
   var gd=$('genDate').value||todayIso();
   return {layout:layout, info:{ket:ketAll(layout), nama:p.nama.toUpperCase(),tel:p.tel||'',pekerja:(p.pekerja||'').toUpperCase(),alamat:(p.alamat||'').toUpperCase(),jabatan:(p.jabatan||'').toUpperCase(),bulan:C.monthLabel(S.ym),tarikh:C.fmtDate(gd)}};
 }
