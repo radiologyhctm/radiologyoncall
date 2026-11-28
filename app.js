@@ -292,7 +292,7 @@ function renderOcCal(){
     if(onc[iso]) cls+=' onc'; else if(onc2[iso]) cls+=' onc2'; if(iso===sel) cls+=' sel'; if(iso===today) cls+=' today'; if(has[iso]) cls+=' has';
     h+='<button type="button" class="'+cls+'" data-d="'+iso+'"'+(H[iso]?' title="'+esc(H[iso])+'"':'')+'>'+d+'</button>';
   }
-  h+='</div><div class="callg"><span><i style="background:var(--navy)"></i>Dipilih</span><span><i style="background:#ffedd5;box-shadow:inset 0 0 0 1.5px #fb923c"></i>Cuti umum</span><span><i style="background:#f1f5f9"></i>Hujung minggu</span><span><i style="background:#16a34a"></i>Oncall</span><span><i style="background:#dcfce7;box-shadow:inset 0 0 0 1px #86efac"></i>Esok oncall</span><span><i style="background:#7c3aed;border-radius:50%;width:7px;height:7px;vertical-align:1px"></i>Lebih masa</span></div>';
+  h+='</div><div class="callg"><span><i style="background:var(--navy)"></i>Dipilih</span><span><i style="background:#ffedd5;box-shadow:inset 0 0 0 1.5px #fb923c"></i>Cuti umum</span><span><i style="background:#f1f5f9"></i>Hujung minggu</span><span><i style="background:#16a34a"></i>Oncall</span><span><i style="background:#dcfce7;box-shadow:inset 0 0 0 1px #86efac"></i>Esok oncall</span><span><i style="background:#7c3aed"></i>Lebih masa</span></div>';
   if(phs.length) h+='<div class="calph">★ '+phs.join(' · ')+'</div>';
   $('ocCal').innerHTML=h;
 }
